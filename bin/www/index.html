@@ -1,0 +1,207 @@
+<!doctype html>
+<html ng-app="ExpressMockerAdmin">
+<head>
+    <title>Express Mocker Admin</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-ace/ui-ace.min.js"></script>
+    <script type="text/javascript" src="bower_components/ace-builds/src-min-noconflict/ace.js"></script>
+    <script type="text/javascript" src="bower_components/showdown/compressed/showdown.js"></script>
+    <script type="text/javascript" src="bower_components/showdown/compressed/extensions/twitter.js"></script>
+
+    <script type="text/javascript" src="js/MainController.js"></script>
+    <script type="text/javascript" src="js/JSONMocker.js"></script>
+    <script type="text/javascript" src="js/jsmin.js"></script>
+
+
+
+
+    <script src="js/app.js"></script>
+
+</head>
+
+<body>
+<div ng-controller="MainController as mc">
+
+    <div class="modal" style="display: block;" id="myModal" ng-show="mc.linkPreview">
+        <div class="modal-dialog" style="width:80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button ng-click="mc.linkPreview=false" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Route Preview</h4>
+                </div>
+                <div class="modal-body">
+                    <iframe ng-src="{{mc.currentRoutePreview}}" style="width:100%; height: 360px;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" data-dismiss="modal" class="btn btn-primary" ng-click="mc.linkPreview=false">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" ng-show="mc.listVisible">
+        <div class="navbar navbar-fixed-top navbar-default">
+            <div class="navbar-form navbar-right">
+                <a ng-show="mc.reloadNeeded" ng-click="mc.reload()" class="btn btn-danger">RELOAD SERVER</a>
+                <a ng-click="mc.radd()" class="btn btn-link"><span class="icon-plus"></span> NEW</a>
+            </div>
+            <div class="navbar-header">
+                <a href="#" class="navbar-brand">ExpressMocker <span style="font-size:12px">v0.1 Alpha</span></a>
+            </div>
+        </div>
+        <div class="row" ng-repeat="route in mc.config.defaultRoutes">
+            <div class="col-sm-1 no-padding-left">
+                <a ng-click="mc.toggleActive($index)" ng-class="{ 'btn':true, 'btn-block':true, 'btn-success':route.active, 'btn-default':(!route.active) }"  title="Method"><span class="icon-light-bulb"></span></a>
+            </div>
+            <div class="col-sm-1 no-padding-left">
+                <a class="btn btn-warning btn-block" title="Method">{{route.verb | uppercase }}</a>
+            </div>
+            <div class="col-sm-7">
+                <div class="well x-route">{{ route.route }}</div>
+            </div>
+            <div class="col-sm-1">
+                <a class="btn btn-block btn-default" ng-click="mc.previewRoute(route.route)"><span class="icon-eye"></span></a>
+            </div>
+            <div class="col-sm-1 no-padding">
+                <a class="btn btn-default btn-block" ng-click="mc.redit($index)"><span class="icon-pencil"></span></a>
+            </div>
+            <div class="col-sm-1 ">
+                <a class="btn btn-danger btn-block" ng-click="mc.delete($index)"><span class="icon-trash"></span></a>
+            </div>
+        </div>
+
+    </div>
+    <div class="container"  ng-show="!mc.listVisible">
+        <div class="navbar navbar-fixed-top navbar-default">
+            <form class="navbar-form navbar-right">
+                <a ng-show="mc.reloadNeeded" ng-click="mc.reload()" class="btn btn-success">RELOAD</a>
+                <button ng-click="mc.cancel()" type="submit" class="btn btn-link" style="color:#900"><span class="icon-cross"></span> CANCEL</button>
+                <button ng-click="mc.save()" type="submit" class="btn btn-link"><span class="icon-checkmark"></span> SAVE</button>
+            </form>
+            <div class="navbar-header">
+                <a href="#" class="navbar-brand">ExpressMocker <span style="font-size:12px">v0.1 Alpha</span></a>
+            </div>
+        </div>
+        <div class="well">
+            <div class="row">
+                <div class="col-sm-12">
+                    <nav class="navbar navbar-default">
+                        <div class="navbar-header">
+                            <span class="navbar-brand">Route</span>
+                        </div>
+                        <div class="navbar-text navbar-left" style="min-width: 520px;">
+                            <input ng-model="mc.currentRoute.route" ng-change="mc.routeChanging" type="text" class="form-control" title="Route" placeholder="route">
+                        </div>
+
+
+                        <div class="navbar-text" style="min-width: 420px;">
+                            <div class="btn-group" style="margin-right: 15px;">
+                                <a class="btn btn-primary x-btn-mini">VERB</a>
+                                <a class="btn btn-default x-btn-mini" ng-click="mc.setCurrentVerb('get')"   ng-class="{'btn-success':mc.currentRoute.verb=='get'}">GET</a>
+                                <a class="btn btn-default x-btn-mini" ng-click="mc.setCurrentVerb('post')"  ng-class="{'btn-success':mc.currentRoute.verb=='post'}">POST</a>
+                                <a class="btn btn-default x-btn-mini" ng-click="mc.setCurrentVerb('put')"   ng-class="{'btn-success':mc.currentRoute.verb=='put'}">PUT</a>
+                                <a class="btn btn-default x-btn-mini" ng-click="mc.setCurrentVerb('del')"   ng-class="{'btn-success':mc.currentRoute.verb=='del'}">DEL</a>
+                                <a class="btn btn-default x-btn-mini" ng-click="mc.setCurrentVerb('all')"   ng-class="{'btn-success':mc.currentRoute.verb=='all'}">ALL</a>
+                            </div>
+                            <span class="btn x-btn-mini" ng-class="{'btn-primary':mc.showDescription, 'btn-default':!mc.showDescription}" ng-click="mc.showDescription=!mc.showDescription;mc.previewDescription = false;">DESCRIPTION</span>
+                            <a ng-click="mc.toggleDescriptionPreview()" ng-class="{'btn-warning':mc.previewDescription, 'btn-default':!mc.previewDescription}" ng-show="mc.showDescription" class="btn"> <i class="icon-eye"></i></a>
+
+                        </div>
+
+                    </nav>
+                </div>
+
+                <div ng-show="mc.showDescription">
+                    <div class="col-sm-12"><h4>Description</h4></div>
+                    <div ng-class="{'col-sm-12':!mc.previewDescription, 'col-sm-6':mc.previewDescription}">
+                        <div ng-model="mc.currentRoute.description" ui-ace="{
+                          useWrapMode : true,
+                          showGutter: true,
+                          theme:'twilight',
+                          mode: 'markdown',
+                          onChange: aceChanged,
+                          onLoad: aceLoaded
+
+                        }" style="height: 400px;"></div>
+
+                    </div>
+                </div>
+                <div class="col-sm-6" ng-show="mc.previewDescription">
+                    <div class="well" ng-bind-html="mc.markDownPreview" style="height: 400px; background: #FFF; overflow: scroll;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="well well-sm">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="navbar-header">
+                        <span class="navbar-brand">Response</span>
+                    </div>
+                    <div class="well well-sm" style="display:inline-block;">
+                        <a class="btn btn-default" ng-click="mc.setType(0)" ng-class="{'btn-primary':(mc.currentRouteSwitch.fileType==0)}"><i class="icon-clipboard"></i><span style="font-size:12px"> json-mk</span></a>
+                        <a class="btn btn-default" ng-class="{'btn-warning':mc.previewVisible, 'btn-default':!mc.previewVisible}" ng-click="mc.preview()" ng-show="mc.currentRouteSwitch.fileType==0"><i class="icon-eye"></i></a>
+                    </div>
+                    <div class="well well-sm" style="display:inline-block;">
+                        <a class="btn btn-default" ng-click="mc.setType(1)" ng-class="{'btn-primary':(mc.currentRouteSwitch.fileType==1)}"><i class="icon-clipboard"></i><span style="font-size:12px"> base64</span></a>
+                        <input type="file" id="uploadFile" ng-file-select="mc.uploadFile($files)" style="display: none;">
+                        <a class="btn btn-default " ng-click="mc.browseForFile()" ng-show="mc.currentRouteSwitch.fileType==1"><span style="font-size:12px"><i class="icon-eye"></i> Add File</span></a>
+                    </div>
+                    <div class="well well-sm" style="display:inline-block;">
+                        <form class="form-inline" role="form">
+
+                            <button class="btn" ng-click="mc.setType(2)" ng-class="{'btn-primary':mc.currentRouteSwitch.fileType==2, 'btn-default':mc.currentRouteSwitch.fileType!=2}"><i class="icon-disk"></i><span style="font-size:12px"> Disk file</span></button>
+                            <div class="form-group">
+                                <label class="sr-only" for="exampleInputPassword2">Password</label>
+                                <input ng-show="mc.currentRouteSwitch.fileType==2" ng-model="mc.currentRoute.response.source" type="text" class="form-control">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="alert alert-danger" ng-show="mc.noValidJSONMockupCode">
+                        No valid JSONMockup code found. By convenience while editing in the inline editor code must begin with:<br> "var jsonmocker={".
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div style="padding-left:15px;" ng-class="{'col-sm-12':!mc.previewVisible, 'col-sm-6':mc.previewVisible}">
+                    <div ng-model="mc.currentRoute.response.source" ng-show="mc.currentRouteSwitch.fileType==0" ui-ace="{
+                      useWrapMode : true,
+                      showGutter: true,
+                      theme:'twilight',
+                      mode: 'javascript',
+                      onChange: aceChanged,
+                      onLoad: aceLoaded
+
+                    }"></div>
+                </div>
+                <div class="col-sm-6" ng-show="mc.previewVisible" >
+                    <div ng-model="mc.previewOutput" ng-show="mc.currentRouteSwitch.fileType==0" ui-ace="{
+                      useWrapMode : true,
+                      showGutter: true,
+                      theme:'twilight',
+                      mode: 'javascript',
+                      onChange: aceChanged,
+                      onLoad: aceLoaded
+
+                    }"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div ng-show="mc.loading" style="z-index:9999999; position: absolute; left:0px; top:0px; width:100%; height: 100%; pointer-events:none; background-color: rgba(0,0,0,.8)"></div>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+{
+	"name": "ExpressMocker"
+	,"description": "A simple Mockup Server for REST services that can generate fake data based on simple JSON templates."
+	,"version": "0.0.1"
+	,"engines": {"node": ">=0.10.0"}
+	,"author": "Pedro Casaubon <xperiments@gmail.com>"
+	,"dependencies": {
+		"express": ">=3.1"
+		,"commander": ">=1"
+		,"dom-storage":"https://github.com/coolaj86/node-dom-storage/tarball/master"
+	}
+	,"main": "./src/ExpressMocker.js"
+	,"bin":{
+		"express-mocker":"./bin/ExpressMocker.js"
+	}
+	,"keywords": [
+		"express"
+		,"mock"
+		,"stub"
+		,"REST"
+		,"SOAP"
+		,"testing"
+		,"functional"
+		,"api"
+		,"json"
+		,"generator"
+	]
+	,"preferGlobal": true
+	,"license": "MIT"
+}
+
