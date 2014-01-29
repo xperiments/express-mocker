@@ -102,13 +102,23 @@ var fs = require('fs');
                 };
 
                 JSONMocker.prototype.parseVars = function (object) {
-                    var repeat = /\$repeat\:(\d*)/;
+                    var repeat = /\$repeat\:([\d\,\s]*)/;
 
                     switch (true) {
                         case object instanceof Array:
                             var repeatFound;
                             if (repeatFound = repeat.test(object[0])) {
-                                var repeatCount = parseInt(repeat.exec(object[0])[1]);
+                                var repeatCount = 0;
+                                var repeatExec = repeat.exec(object[0]);
+                                var repeatCommand = repeatExec[1];
+                                if (repeatCommand.indexOf(',') != -1) {
+                                    var components = repeatCommand.split(',').map(function (e) {
+                                        return parseInt(e.trim(), 10);
+                                    });
+                                    repeatCount = (~~(Math.random() * (components[1] - components[0]))) + components[0];
+                                } else {
+                                    repeatCount = parseInt(repeatCommand);
+                                }
                                 object.shift();
                                 object = this.parseArray(object[0], repeatFound ? repeatCount : object.length);
                             } else {

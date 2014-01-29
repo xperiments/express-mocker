@@ -2,8 +2,7 @@
 var pkg = require("../package.json"),
 	commander = require("commander"),
 	fs = require("fs"),
-	path = require("path"),
-	ExpressMocker = require("../src/ExpressMocker.js").es.xperiments.nodejs.ExpressMocker;
+	path = require("path");
 
 var defaultConfigFile =
 {
@@ -98,8 +97,7 @@ if( commander.install || commander.forceInstall )
 		}
 		fs.writeFile( expressMockerConfigPath, JSON.stringify(defaultConfigFile, null, "	"));
 		console.log('ExpressMocker is configured for the current project.');
-		console.log('Edit the express-mocker.m.json file to change params');
-		console.log('Navigate to 127.0.0.1:7878/admin to configure the routes');
+		console.log('Navigate to 127.0.0.1:7878/express-mocker to access the Dashboard');
 	}
 	else
 	{
@@ -111,10 +109,12 @@ else
 {
 	if( !fs.existsSync(expressMockerConfigPath))
 	{
-		console.log('Error: ExpressMocker is not configured for the current dir.  Use "express-mocker --install" to init it in the current dir');
+		console.log('[ATTENTION] Error: ExpressMocker is not configured for the current dir.\n[ATTENTION] Use "express-mocker --install" to init it in the current dir.');
 	}
 	else
 	{
+
+		var ExpressMocker = require("../src/ExpressMocker.js").es.xperiments.nodejs.ExpressMocker;
 
 		new ExpressMocker( __dirname, process.cwd())
 			.loadConfig( expressMockerConfigPath )

@@ -1,5 +1,6 @@
 ///<reference path="d.ts/DefinitelyTyped/node/node.d.ts"/>
 ///<reference path="d.ts/DefinitelyTyped/express/express.d.ts"/>
+///<reference path="JSONMocker.d.ts"/>
 var $NodeStorage = require('../node_modules/dom-storage/lib/index');
 var StringDecoder = require('string_decoder').StringDecoder;
 var decoder = new StringDecoder('utf8');
