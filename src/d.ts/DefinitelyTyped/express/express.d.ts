@@ -1104,15 +1104,15 @@ declare module "express" {
              *    http.createServer(app).listen(80);
              *    https.createServer({ ... }, app).listen(443);
              */
-            listen(port: number, hostname: string, backlog: number, callback?: Function): void;
+            listen(port: number, hostname: string, backlog: number, callback?: Function);
 
-            listen(port: number, hostname: string, callback?: Function): void;
+            listen(port: number, hostname: string, callback?: Function);
 
-            listen(port: number, callback?: Function): void;
+            listen(port: number, callback?: Function);
 
-            listen(path: string, callback?: Function): void;
+            listen(path: string, callback?: Function);
 
-            listen(handle: any, listeningListener?: Function): void;
+            listen(handle: any, listeningListener?: Function);
 
             route: IRoute;
 

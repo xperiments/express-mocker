@@ -1,0 +1,45 @@
+{
+    "port": 7878,
+    "quiet": false,
+    "statics": [
+        {
+            "route": "/src",
+            "directory": "/src"
+        }
+    ],
+    "defaultRoutes": [
+        {
+            "verb": "get",
+            "route": "/admin",
+            "basicAuth": {
+                "login": "xperiments",
+                "password": "viernes13"
+            },
+            "response": {
+                "source": "data:application/json-mock;base64,ew0KCWI6Ww0KCQkgIiRyZXBlYXQ6MzAiDQoJCSx7DQoJCQkibmFtZSI6Int7Y2xlYXJ9fSINCgkJCSwic3VybmFtZSI6Int7JGZpcnN0TmFtZX19Ig0KCQkJLCJpZCI6Int7JHF1ZXJ5KCdpZCcpfX0iDQoJCX0NCgldDQoJLCJjbGVhciI6ZnVuY3Rpb24oKXtyZXR1cm4gJzc3Nzc3J30NCn07"
+            }
+        },
+        {
+            "verb": "get",
+            "route": "/gif",
+            "response": {
+                "source": "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7"
+            }
+        },
+        {
+            "verb": "get",
+            "route": "/file",
+            "response": {
+                "source": "file.json-mk"
+            }
+        },
+        {
+            "verb": "get",
+            "active": true,
+            "route": "/test",
+            "response": {
+                "source": "data:application/json-mock;base64,IHsKICAgICJsb3JlbSI6Int7bG9yZW0oNSx0cnVlLDEwLFsxLDJdLHthOjEwfSl9fSIKfQ=="
+            }
+        }
+    ]
+}

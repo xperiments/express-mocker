@@ -1,82 +1,72 @@
 #!/usr/bin/env node
 var pkg = require("../package.json"),
 	commander = require("commander"),
+	Logger = require("../src/ExpressLogger.js").ExpressLogger,
 	fs = require("fs"),
-	path = require("path");
+	path = require("path"),
+	expressMockerConfigDir = "./express-mocker",
+	expressMockerConfigPath = expressMockerConfigDir + "/config.json",
+	defaultConfigFile =
+	{
+		port:7878
+		,quiet:false
+		,statics:[ { route:'/src', directory:'/src' } ]
+		,defaultRoutes:
+		[
+			{
+				verb:"get"
+				,route:"/admin"
+				,basicAuth:{ login:'xperiments', password:'viernes13' }
+				,response:
+				{
+					source:"data:application/json-mock;base64,ew0KCWI6Ww0KCQkgIiRyZXBlYXQ6MzAiDQoJCSx7DQoJCQkibmFtZSI6Int7Y2xlYXJ9fSINCgkJCSwic3VybmFtZSI6Int7JGZpcnN0TmFtZX19Ig0KCQkJLCJpZCI6Int7JHF1ZXJ5KCdpZCcpfX0iDQoJCX0NCgldDQoJLCJjbGVhciI6ZnVuY3Rpb24oKXtyZXR1cm4gJzc3Nzc3J30NCn07"
+				}
+			}
+			,{
+				verb:"get"
+				,route:"/gif"
+				,response:
+				{
+					source:"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7"
+				}
+			}
+			,{
+				verb:"get"
+				,route:"/file"
+				,response:
+				{
+					source:"file.json-mk"
+				}
+			}
+		]
 
-var defaultConfigFile =
+	}
+
+function runServer()
 {
-	port:7878
-	,quiet:false
-	,statics:[
-		{ route:'/src', directory:'/src' }
-	]
-	,defaultRoutes:
-	[
-		/*{
-			 verb:"get"
-			,route:"/admin"
-			,basicAuth:{ login:'xperiments', password:'viernes13' }
-			,response:
-			{
-				 source:"file.json"
-				,headers:
-				[
-					{"Access-Control-Allow-Origin":"*"},
-					{"Content-Length":348}
-				]
-			}
-		}
-
-		 {
-		 "verb": "get",
-		 "route": "/admin",
-		 "basicAuth": {
-		 "login": "xperiments",
-		 "password": "viernes13"
-		 },
-		 "response": {
-		 "source": "data:application/json-mock;base64,ew0KCWI6Ww0KCQkgIiRyZXBlYXQ6MzAiDQoJCSx7DQoJCQkibmFtZSI6Int7Y2xlYXJ9fSINCgkJCSwic3VybmFtZSI6Int7JGZpcnN0TmFtZX19Ig0KCQkJLCJpZCI6Int7JHF1ZXJ5KCdpZCcpfX0iDQoJCX0NCgldDQoJLCJjbGVhciI6ZnVuY3Rpb24oKXtyZXR1cm4gJzc3Nzc3J30NCn07"
-		 }
-		 },
-
-
-
-		*/
-		{
-			verb:"get"
-			,route:"/admin"
-			,basicAuth:{ login:'xperiments', password:'viernes13' }
-			,response:
-			{
-				source:"data:application/json-mock;base64,ew0KCWI6Ww0KCQkgIiRyZXBlYXQ6MzAiDQoJCSx7DQoJCQkibmFtZSI6Int7Y2xlYXJ9fSINCgkJCSwic3VybmFtZSI6Int7JGZpcnN0TmFtZX19Ig0KCQkJLCJpZCI6Int7JHF1ZXJ5KCdpZCcpfX0iDQoJCX0NCgldDQoJLCJjbGVhciI6ZnVuY3Rpb24oKXtyZXR1cm4gJzc3Nzc3J30NCn07"
-			}
-		}
-		,{
-			verb:"get"
-			,route:"/gif"
-			,response:
-			{
-				source:"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7"
-			}
-		}
-		,{
-			verb:"get"
-			,route:"/file"
-			,response:
-			{
-				source:"file.json-mk"
-			}
-		}
-	]
-
+	var ExpressMocker = require("../src/ExpressMocker.js").ExpressMocker;
+	new ExpressMocker( __dirname, process.cwd())
+		.loadConfig( expressMockerConfigPath )
+		.setQuiet( commander.quiet )
+		.setPort( commander.port )
+		.createServer();
 }
 
+//https://gist.github.com/timoxley/1689041
+function isPortTaken( port, fn ) {
 
-
-
-var expressMockerConfigDir = "./express-mocker"
-var expressMockerConfigPath = expressMockerConfigDir + "/config.json"
+	var net = require('net');
+	var tester = net.createServer()
+		.once('error', function (err) {
+			if (err.code != 'EADDRINUSE') return fn(err)
+			fn(null, true)
+		})
+		.once('listening', function() {
+			tester.once('close', function() { fn(null, false) })
+				.close()
+		})
+		.listen(port)
+}
 
 commander
 	.version(pkg.version)
@@ -84,43 +74,72 @@ commander
 	.option("-f, --forceInstall", "[ SURE? ] Changes to the config files will be lost!!")
 	.option("-q, --quiet", "Disable console logging")
 	.option("-p, --port <port>", "Port that the http mock server will use. Default is 7878.", 0)
+	.option("-d, --die <dieport>", "Force shutdown of the server at the specified port", 0 )
 	.parse(process.argv);
+
+
+if( commander.die!=0 )
+{
+	isPortTaken( commander.die , function( error, inUse )
+	{
+		if( inUse )
+		{
+			var http = require('http');
+			http.get({host: '127.0.0.1', port: commander.die, path: '/express-mocker/stop-server'}, function(res) {
+				res.setEncoding('utf8');
+				res.on('data',function(chunk){
+					if( chunk=='{"code":100}' )
+					{
+						Logger.log('Closed ExpressMocker instance at port', commander.die );
+					}
+					else
+					{
+						Logger.error('Something has gone wrong while closing port', commander.die );
+					}
+					process.exit(0);
+
+				})
+			});
+
+		}
+		else
+		{
+			Logger.error(["Can't close port ", commander.die, ". Port is not in use."].join('') );
+		}
+
+	});
+	return;
+}
+
 
 if( commander.install || commander.forceInstall )
 {
 	if( !fs.existsSync(expressMockerConfigPath) || commander.forceInstall )
 	{
-
 		if( !fs.existsSync( expressMockerConfigDir ) )
 		{
 			fs.mkdir( expressMockerConfigDir )
 		}
 		fs.writeFile( expressMockerConfigPath, JSON.stringify(defaultConfigFile, null, "	"));
-		console.log('ExpressMocker is configured for the current project.');
-		console.log('Navigate to 127.0.0.1:7878/express-mocker to access the Dashboard');
+		Logger.log('ExpressMocker is now configured for the current project.');
+		Logger.log('Navigate to 127.0.0.1:7878/express-mocker to access the Dashboard');
+		runServer();
 	}
 	else
 	{
-		console.log('[ATTENTION] Current dir allready has ExpressMocker installed');
-		console.log('[ATTENTION] Use --foceIntall to override it');
+		Logger.error('[ATTENTION] Current dir allready has ExpressMocker installed');
+		Logger.error('[ATTENTION] Use --forceIntall to override it');
 	}
 }
 else
 {
 	if( !fs.existsSync(expressMockerConfigPath))
 	{
-		console.log('[ATTENTION] Error: ExpressMocker is not configured for the current dir.\n[ATTENTION] Use "express-mocker --install" to init it in the current dir.');
+		Logger.error('[ATTENTION] Error: ExpressMocker is not configured for the current dir.');
+		Logger.log('[ATTENTION] Use "express-mocker --install" to init it in the current dir.');
 	}
 	else
 	{
-
-		var ExpressMocker = require("../src/ExpressMocker.js").es.xperiments.nodejs.ExpressMocker;
-
-		new ExpressMocker( __dirname, process.cwd())
-			.loadConfig( expressMockerConfigPath )
-			.setQuiet( commander.quiet )
-			.setPort( commander.port )
-			.createServer();
-
+		runServer();
 	}
 }
