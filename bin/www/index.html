@@ -34,8 +34,14 @@
             </div>
             <div class="navbar-collapse" id="navbar-main">
                 <ul class="nav navbar-nav">
-                    <li class="active">
-                        <a ng-click="mc.showCheatSheet = true">Docs</a>
+                    <li>
+                        <a ng-click="mc.showCheatSheet = true">Help</a>
+                    </li>
+                    <li>
+                        <a ng-click="mc.generateDocumentation(true)"><i class="icon-disk"></i>Docs-HTML</a>
+                    </li>
+                    <li>
+                        <a ng-click="mc.generateDocumentation(false)"><i class="icon-disk"></i>Docs-MD</a>
                     </li>
                 </ul>
 
@@ -64,7 +70,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button ng-click="mc.showCheatSheet = false" type="button" class="close">&times;</button>
-                        <h4 class="modal-title">Docs</h4>
+                        <h4 class="modal-title">Help</h4>
                     </div>
                     <div class="modal-body">
                         <a href="docs.html#index" target="docsFrame" class="btn btn-success btn-sm em-back-to-index" ><span>TOP</span></a>
