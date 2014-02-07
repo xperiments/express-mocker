@@ -156,7 +156,7 @@ var JSONMocker = (function () {
     };
 
     JSONMocker.prototype.parseVars = function (object) {
-        var repeat = /\$repeat([\d\,\s]*)/;
+        var repeat = /\$repeat\(([\d\,\s]*)\)/;
 
         switch (true) {
             case object instanceof Array:

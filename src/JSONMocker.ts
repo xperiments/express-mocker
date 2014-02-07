@@ -174,7 +174,7 @@ export class JSONMocker
 
 	private parseVars( object:any ):any
 	{
-		var repeat:RegExp = /\$repeat([\d\,\s]*)/;
+		var repeat:RegExp = /\$repeat\(([\d\,\s]*)\)/;
 
 		switch( true )
 		{
