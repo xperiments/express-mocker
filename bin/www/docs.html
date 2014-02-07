@@ -1,0 +1,792 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0; }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+<title>ExpressMocker</title>
+
+</head>
+<body>
+<a name="top"></a><h1>ExpressMocker</h1>
+
+<p>A small FAKE REST web server for your daily development.</p>
+
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#instalation">Installation</a></li>
+<li><a href="#commandline">Command Line Usage</a></li>
+<li><a href="#templateSystem">Template system</a></li>
+<li><a href="#storingData">Storing data</a></li>
+<li><a href="#raw64">Direct raw base64 Output</a></li>
+<li><a href="#api">API Reference</a></li>
+</ul>
+
+
+<h2><a name="features"></a>Features</h2>
+
+<ul>
+<li>Small</li>
+<li>Uses ExpressJS</li>
+<li>Define an endpoint and return JSON data based on a template object</li>
+<li>FakeData generator to use in templates</li>
+<li>Simple NodeJS implemented <strong>localStorage</strong> instance to store things</li>
+<li>Custom methods can be defined in templates</li>
+<li>Can generate SVG imagen on the fly</li>
+<li><p>Custom methods can use "Injected" arguments</p>
+
+<ul>
+<li>$request // $request object containing GET/POST data</li>
+<li>$localStorage // localStorage "one file" node implementation</li>
+<li>$console // debug to node console from the template</li>
+<li>$helper // access DataFackerHelper methods</li>
+<li>$utils // access DataFackerUtils methods</li>
+</ul>
+</li>
+</ul>
+
+
+<h2><a name="instalation"></a>Installation</h2>
+
+<p>You need nodejs installed and running in your system.</p>
+
+<p>Clone locally the repository.</p>
+
+<p>Go to your local source folder an type:</p>
+
+<pre><code>    sudo npm install -g
+</code></pre>
+
+<p>This will install "express-mocker" globally.</p>
+
+<h2><a name="commandline"></a>Command Line Usage</h2>
+
+<h3>Installing</h3>
+
+<p>First we need to initialize our express-mocker instance in some dir.
+To initialize it in any wanted directory type:</p>
+
+<pre><code>express-mocker --install
+express-mocker --forceInstall // Overwrites your files!!!
+</code></pre>
+
+<p>This will create a subdir named "express-mocker" with some config files.</p>
+
+<h3>Running</h3>
+
+<p>In a dir containing the express-mocker dir type:</p>
+
+<pre><code>express-mocker
+</code></pre>
+
+<p>This will run express-mocker with the default config.json port and verbose options.</p>
+
+<p>You can also use this command line flags:</p>
+
+<pre><code>express-mocker --port &lt;port&gt; // sets the port
+express-mocker --quiet     // force run in quiet mode
+</code></pre>
+
+<h3>Force exit ;-)</h3>
+
+<p>In the case you need to force close the port you can use this command:</p>
+
+<pre><code>express-mocker --die &lt;port&gt; // closes the port
+</code></pre>
+
+<h2><a name="templateSystem"></a>Template system</h2>
+
+<h3>Basic Templating</h3>
+
+<p>ExpressMocker uses a simple template system defined by a javascript object:</p>
+
+<pre><code>var jsonmocker =
+{
+    "static": "value", // static value
+    "fakeName": "{{firstName}}", // run firstName helper
+    "staticArray": [10, 20], // static array
+    "dynamicArray": [
+        "$repeat(2)", // next item in array will be repeated 2 times
+        {
+            "name": "{{firstName}} {{lastName}}",
+            "age": "{{random(80)}}"
+        }
+    ]
+}
+</code></pre>
+
+<p>This will output something like this:</p>
+
+<pre><code>{
+    "static": "value",
+    "fakeName": "Shea",
+    "staticArray": [ 10,20 ],
+    "dynamicArray": [
+        {
+            "name": "Baron Green",
+            "age": "69"
+        },
+        {
+            "name": "Abdullah Gibson",
+            "age": "48"
+        }
+    ]
+}
+</code></pre>
+
+<h4>Using GET/POST vars</h4>
+
+<pre><code>var jsonmocker = 
+{
+    "property":"{{var-name}}"
+}
+</code></pre>
+
+<p>So for:</p>
+
+<pre><code>/test/:myVar/:mySecondVar
+</code></pre>
+
+<p>We can the take the values as:</p>
+
+<pre><code>var jsonmocker = 
+{
+     "request_myVar":"{{myVar}}"
+    ,"request_mySecondVar":"{{mySecondVar}}"
+}
+</code></pre>
+
+<h4>Custom template methods</h4>
+
+<p>You can define custom methods for use in your templates.</p>
+
+<pre><code>var jsonmocker = 
+{
+    "hello":"{{customMethod}}",
+    "hello25":"{{customMethodWithParams(25)}}",
+    "customMethod": function(){
+        return "World!!"
+    },
+    "customMethodWithParams":function(numberOfWorlds){
+        return "World "+numberOfWorlds+" !!"
+    }
+}
+</code></pre>
+
+<p>Output</p>
+
+<pre><code>{
+    "hello":"World!!",
+    "hello25":"World 25 !!"
+}       
+</code></pre>
+
+<h4>Possible Injections in your functions</h4>
+
+<p>ExpressMocker uses a simple Injection system with this injections available:</p>
+
+<ul>
+<li>$request // $request object containing GET/POST data</li>
+<li>$localStorage // localStorage "one file" node implementation</li>
+<li>$console // debug to node console from the template</li>
+<li>$helper // access DataFackerHelper methods</li>
+<li>$utils // access DataFackerUtils methods</li>
+</ul>
+
+
+<p>Using it in your custom methods is simple as:</p>
+
+<pre><code>var jsonmocker =
+{
+    // REMEMBER!! You must put FIRST the non Injected params
+    customTelephone:function( prefix, $utils )
+    {
+        return $utils.replacePattern( prefix+'.4##.##.##.##');
+    },
+    "phone":"{{customTelephone('+33')}}"
+}   
+</code></pre>
+
+<p>Output</p>
+
+<pre><code>{
+    "phone":"+33.456.78.90"
+}   
+</code></pre>
+
+<h2><a name="storingData"></a>Storing data</h2>
+
+<p>A special key <strong>$preprocessRequest</strong> is reserved to indicate the template that request preprocesing must be done.</p>
+
+<p>Here is where we can use the $localStorage injection most time.</p>
+
+<p>A simple fake GET user registration can be done via:</p>
+
+<pre><code>For this route:
+
+/user/register/:user/:password
+
+var jsonmocker =
+{
+    "$preprocessRequest":function( $localStorate, $request )
+    {
+        $localStorate.setItem
+        (
+            'singleUserStore',
+            JSON.stringify
+            (
+                {
+                    user:$request.params('user),
+                    password:$request.params('password)
+                }
+            )
+        );
+    },
+    "code":100      
+}
+</code></pre>
+
+<p>Calling:</p>
+
+<pre><code>/user/register/test/1234
+</code></pre>
+
+<p>Will generate a singleUserStore key with a JSON representation of the user object.</p>
+
+<h2><a name="raw64"></a>Direct raw base64 Output</h2>
+
+<p>A special key <strong>$content</strong> key "is reserved to indicate that the value of this key must be processed as a base64 output stream.</p>
+
+<pre><code>var jsonmocker =
+{
+    "$content":"data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+}
+</code></pre>
+
+<p>This will ouput a 1pix gif image ;-) or call it with the provided image function:</p>
+
+<pre><code>var jsonmocker =
+{
+    "$content":"{{image(320,480)}}"
+}
+</code></pre>
+
+<h2><a name="api"></a>API Reference</h2>
+
+<table>
+<thead>
+<tr>
+<th>Injectors</th>
+<th>$helper</th>
+<th>$utils</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#$helper">$helper</a>                    </td>
+<td><a href="#firstName">firstName</a>                </td>
+<td><a href="#slug">slug(str)</a></td>
+</tr>
+<tr>
+<td><a href="#$utils">$utils</a>                      </td>
+<td><a href="#lastName">lastName</a>                  </td>
+<td><a href="#shuffle">shuffle(array)</a></td>
+</tr>
+<tr>
+<td><a href="#$scope">$scope</a>                      </td>
+<td><a href="#company">company</a>                    </td>
+<td><a href="#titleCase">titleCase(str)</a></td>
+</tr>
+<tr>
+<td><a href="#$localStorage">$localStorage</a>        </td>
+<td><a href="#email">email</a>                        </td>
+<td><a href="#replacePattern">replacePattern(pattern)</a></td>
+</tr>
+<tr>
+<td><a href="#$request">$request</a>                  </td>
+<td><a href="#bool">bool</a>                          </td>
+<td><a href="#randomElement">randomElement(elements)</a></td>
+</tr>
+<tr>
+<td><a href="#$console">$console</a>                  </td>
+<td><a href="#image">image(width,height)</a>          </td>
+<td><a href="#randomNumber">randomNumber(range)</a></td>
+</tr>
+<tr>
+<td><a href="#$helper">$helper</a>                    </td>
+<td><a href="#guid">guid</a>                          </td>
+<td><a href="#randomNumberRange">randomNumberRange(start,end)</a></td>
+</tr>
+<tr>
+<td>                                       </td>
+<td><a href="#loremWords">loremWords</a></td>
+<td></td>
+</tr>
+<tr>
+<td>                                       </td>
+<td><a href="#lorem">lorem</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2><a name="$scope"></a>$scope</h2>
+
+<p>The $scope object lets you access your other template methods.</p>
+
+<pre><code>{
+    hello:function(){ return 'Hello' },
+    world:function(){ return 'world!!' },
+    helloWorld:function($scope){
+        return $scope.hello()+$scope.world();
+    }
+    "output":"{{helloWorld}}"
+}
+</code></pre>
+
+<h2><a name="$localStorage"></a>$localStorage</h2>
+
+<p>Use it as it was the client localStorage but with disk storage.</p>
+
+<p>See more at the project page:
+<a href="https://github.com/coolaj86/node-dom-storage">https://github.com/coolaj86/node-dom-storage</a></p>
+
+<h2><a name="$request"></a>$request</h2>
+
+<p>Provides access to the query params and the processed body headers.</p>
+
+<h5><a name="requestParams"></a>params( id:string ):string;</h5>
+
+<pre><code>Returns the request query parameter specified by id. 
+</code></pre>
+
+<h5><a name="requestBody"></a>body( id:string ):any;</h5>
+
+<pre><code>Returns the request body object specified by id. 
+</code></pre>
+
+<h2><a name="$console"></a>$console</h2>
+
+<p>Provides a unified form ( with quiet mode ) to log messages to the console.</p>
+
+<p>Supported methods:</p>
+
+<ul>
+<li>log(…rest)</li>
+<li>info(…rest)</li>
+<li>error(…rest)</li>
+<li>success(…rest)</li>
+</ul>
+
+
+<h2><a name="$helper"></a>$helper</h2>
+
+<h5><a name="firstName"></a>firstName</h5>
+
+<pre><code>{{firstName}} 
+Returns a random First Name. 
+</code></pre>
+
+<h5><a name="lastName"></a>lastName</h5>
+
+<pre><code>{{lastName} 
+
+Returns a random Last Name.
+</code></pre>
+
+<h5><a name="company"></a>company</h5>
+
+<pre><code>{{company}}
+Returns a random Company name.
+</code></pre>
+
+<h5><a name="email"></a>email</h5>
+
+<pre><code>{{email}}
+Returns a random generated email.
+</code></pre>
+
+<h5><a name="bool"></a>bool</h5>
+
+<pre><code>{{bool}}
+Returns a random boolean value.
+</code></pre>
+
+<h5><a name="image"></a>image(width,height)</h5>
+
+<pre><code>{{image(width,height)}}
+Returns a random base64 encoded svg image.
+</code></pre>
+
+<h5><a name="guid"></a>guid</h5>
+
+<pre><code>{{guid}}
+Returns a random Globally unique identifier.
+</code></pre>
+
+<h5><a name="loremWords"></a>loremWords(number)</h5>
+
+<pre><code>{{loremWords(number)}}
+Returns a random number of loremipsum words.
+</code></pre>
+
+<h5><a name="lorem"></a>lorem( paragraphs,html=false,sentenceWords=(15-45) )</h5>
+
+<pre><code>{{lorem(5)}}
+Returns a loremipsum string composed of n paragraphs.
+
+{{lorem(5,true)}}
+If html is true it will add &lt;p&gt; tags for each paragraph.
+
+{{lorem(5,true,15)}}
+Determine words per sentence. Default is a random value 15-45
+</code></pre>
+
+<h2><a name="$utils"></a>$utils</h2>
+
+<h5><a name="slug"></a>slug(str:string):string</h5>
+
+<pre><code>{{slug('some long texy')}}
+Returns a slugged version of str.
+</code></pre>
+
+<h5><a name="shuffle"></a>shuffle(array:any[]):any[]</h5>
+
+<pre><code>{{shuffle(array)}}
+Returns a randomided version of the provided array.
+</code></pre>
+
+<h5><a name="titleCase"></a>titleCase(str:string):string</h5>
+
+<pre><code>{{titleCase(str)}}
+Returns a titleCase representation of str.
+</code></pre>
+
+<h5><a name="replacePattern"></a>replacePattern(pattern):string</h5>
+
+<pre><code>{{replacePattern('####-UUUU-LLLL')}}
+Processes the provided pattern replacing:
+
+# by a number.
+U by a uppercase letter.
+L by a lowercase letter.
+</code></pre>
+
+<h5><a name="randomElement"></a>randomElement(elements:any[]):any</h5>
+
+<pre><code>{{randomElement([10,\"demo\",true])}}
+Returns a random element from the provided array.
+</code></pre>
+
+<h5><a name="randomNumber"></a>randomNumber(max)</h5>
+
+<pre><code>{{randomNumber(25)}}
+Returns a random number between 0 and max;
+</code></pre>
+
+<h5><a name="randomNumberRange"></a>randomNumberRange(start,end)</h5>
+
+<pre><code>{{randomNumberRange(5,10)}}
+Returns a random number between start and end;      
+</code></pre>
+</body>
+</html>

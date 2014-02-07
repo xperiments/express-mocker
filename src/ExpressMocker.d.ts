@@ -1,36 +1,42 @@
 /// <reference path="d.ts/DefinitelyTyped/node/node.d.ts" />
 /// <reference path="d.ts/DefinitelyTyped/express/express.d.ts" />
 /// <reference path="JSONMocker.d.ts" />
-export interface IExpressMockerStatic {
-    route: string;
-    directory: string;
-}
 export interface IExpressMockerConfig {
     port: number;
     quiet: boolean;
-    allowedDomains?: string[];
     statics?: IExpressMockerStatic[];
     adminAuth?: IExpressMockerBasicAuth;
     defaultRoutes: IExpressMockerRoute[];
+}
+export interface IExpressMockerStatic {
+    route: string;
+    directory: string;
 }
 export interface IExpressMockerBasicAuth {
     login: string;
     password: string;
 }
-export interface IExpressMockerResponseHeaders {
-    [index: string]: any;
+export interface IExpressMockerRoute {
+    active: boolean;
+    id: string;
+    verb: string;
+    route: string;
+    response: IExpressMockerResponse;
+    hidden?: boolean;
+    basicAuth?: IExpressMockerBasicAuth;
+    routeParams?: IExpressMockerRouteParams;
 }
 export interface IExpressMockerResponse {
     source: string;
     headers?: IExpressMockerResponseHeaders;
 }
-export interface IExpressMockerRoute {
-    hidden?: boolean;
-    active: boolean;
-    verb: string;
-    route: string;
-    basicAuth?: IExpressMockerBasicAuth;
-    response: IExpressMockerResponse;
+export interface IExpressMockerRouteParams {
+    name: string;
+    value: string;
+    description: string;
+}
+export interface IExpressMockerResponseHeaders {
+    [index: string]: any;
 }
 export interface IJSONGenResult {
     result: string;
@@ -63,4 +69,5 @@ export declare class ExpressMocker {
     private parseJSONGen(data, route, req, res);
     private sendContentLength(res, contentType, len, charset?);
     private corsMiddleware(req, res, next);
+    private shash(string);
 }

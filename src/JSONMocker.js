@@ -4,6 +4,10 @@ var http = require('http');
 var fs = require('fs');
 var vm = require('vm');
 
+var logger = require("./ExpressLogger");
+logger;
+var Logger = logger.ExpressLogger;
+
 var $NodeStorage = require('../node_modules/dom-storage/lib/index');
 
 var Injector = (function () {
@@ -104,15 +108,16 @@ var JSONMocker = (function () {
         this.injector = JSONMocker.injectorPool.pop();
         this.injector.register('$localStorage', JSONMocker.LOCAL_STORAGE);
         this.injector.register('$console', (function () {
-            return console;
+            return Logger;
         })());
         this.injector.register('$helper', DataFackerHelper);
+        this.injector.register('$utils', DataFackerUtils);
         this.injector.register("$request", {
             params: function (id) {
-                return _this.context.request.params[id] || "";
+                return _this.context[id] || "";
             },
             body: function (id) {
-                return _this.context.request.body[id] || "";
+                return _this.context[id] || "";
             }
         });
 
@@ -123,7 +128,9 @@ var JSONMocker = (function () {
             this.injector.process(this.templateObject['$processRequest']);
         }
 
-        return this.parseObject(this.templateObject);
+        var result = this.parseObject(this.templateObject);
+        JSONMocker.injectorPool.push(this.injector);
+        return result;
     };
 
     JSONMocker.prototype.render = function (template, view) {
@@ -149,7 +156,7 @@ var JSONMocker = (function () {
     };
 
     JSONMocker.prototype.parseVars = function (object) {
-        var repeat = /\$repeat\:([\d\,\s]*)/;
+        var repeat = /\$repeat([\d\,\s]*)/;
 
         switch (true) {
             case object instanceof Array:
@@ -1235,7 +1242,18 @@ var DataFackerStore = (function () {
                 "M512 64c-24.064 0-47.708 1.792-70.824 5.212-0.3-0.782-0.624-1.548-0.982-2.296 12.826-10.002 19.55-23.83 16.634-37.552-3.734-17.564-22.394-29.364-46.434-29.364-5.18 0-10.458 0.562-15.68 1.672-30.168 6.414-50.146 28.622-45.482 50.562 2.834 13.338 14.292 23.338 30.164 27.384-0.032 0.972-0.016 1.95 0.042 2.934-200.622 57.53-347.438 242.338-347.438 461.448 0 265.098 214.904 480 480 480 265.098 0 480-214.902 480-480 0-265.096-214.902-480-480-480zM364.882 48.908c-2.706-12.726 12.48-27.19 33.158-31.584 4.132-0.878 8.29-1.324 12.354-1.324 16.036 0 28.694 6.864 30.784 16.69 1.596 7.51-3.070 15.61-11.386 21.904-7.034-4.966-16.016-7.126-25.1-5.196-9.044 1.922-16.348 7.508-20.758 14.856-10.184-2.45-17.508-8.084-19.052-15.346zM769.386 801.386c-43.968 43.968-97.21 75.278-155.31 92.154l-42.396-68.768-10.746 79.958c-16.090 2.152-32.426 3.27-48.934 3.27-97.228 0-188.636-37.864-257.386-106.614-43.968-43.966-75.278-97.21-92.154-155.308l68.768-42.398-79.96-10.746c-2.15-16.090-3.268-32.426-3.268-48.934 0-97.228 37.862-188.636 106.614-257.386 43.968-43.968 97.212-75.278 155.31-92.156l42.396 68.77 10.748-79.96c16.088-2.15 32.424-3.268 48.932-3.268 97.228 0 188.636 37.862 257.386 106.614 43.968 43.968 75.278 97.212 92.154 155.31l-68.77 42.398 79.96 10.746c2.152 16.088 3.27 32.424 3.27 48.932 0 97.228-37.864 188.636-106.614 257.386zM760.902 295.098l-196.978 149.704c-14.644-7.658-30.876-12.062-47.416-12.726l-51.080-107.18-3.068 118.664c-13.284 6.536-25.104 15.664-34.876 26.95l-63.088-22.364 46.092 48.538c-6.334 13.518-9.866 28.030-10.434 42.824l-107.158 51.066 118.738 3.068c0.38 0.768 0.774 1.526 1.17 2.282l-149.704 196.98 196.978-149.704c14.644 7.656 30.874 12.060 47.416 12.724l51.080 107.182 3.066-118.664c13.286-6.538 25.106-15.664 34.878-26.952l63.090 22.368-46.094-48.54c6.336-13.52 9.868-28.030 10.436-42.824l107.156-51.066-118.736-3.070c-0.378-0.766-0.774-1.524-1.17-2.28l149.702-196.98zM512.102 444.534v0zM492.042 450.098c6.726-1.43 13.444-2.118 20.056-2.118 4.144 0 8.25 0.27 12.294 0.796l0.092 0.032-0.010-0.022c8.732 1.144 17.176 3.5 25.132 6.896l-71.546 54.376-54.38 71.552c-2.376-5.594-4.27-11.484-5.58-17.652-11.026-51.86 22.080-102.836 73.942-113.86zM562.12 625.884v0 0c-9.056 5.544-19.182 9.684-30.16 12.018-6.726 1.43-13.444 2.118-20.054 2.118-4.15 0-8.258-0.272-12.308-0.798l-0.068-0.010c-8.734-1.142-17.174-3.5-25.132-6.894l71.544-54.376 54.38-71.554c2.376 5.594 4.27 11.486 5.58 17.654 8.69 40.882-10.056 81.2-43.782 101.842z",
                 "M259.544 511.998c0-65.416 53.030-118.446 118.446-118.446s118.446 53.030 118.446 118.446c0 65.416-53.030 118.446-118.446 118.446-65.416 0-118.446-53.030-118.446-118.446zM512.004 0c-282.774 0-512.004 229.232-512.004 512s229.226 512 512.004 512c282.764 0 511.996-229.23 511.996-512 0-282.768-229.23-512-511.996-512zM379.396 959.282c-153.956-89.574-257.468-256.324-257.468-447.282 0-190.958 103.512-357.708 257.462-447.282 154.010 89.562 257.59 256.288 257.59 447.282 0 190.988-103.58 357.718-257.584 447.282z"
             ]);
+
             //MicroJSONGenHelperPlugin.loadFeed('videoFeed', 'http://feeds.feedburner.com/TedtalksHD');
+            http.get("http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=100&q=http://feeds.feedburner.com/TedtalksHD", function (res) {
+                var fileContents = '';
+                res.on('data', function (data) {
+                    fileContents += data.toString('utf8');
+                });
+                res.on('end', function (data) {
+                    DataFackerStore.setItem('videoFeed', JSON.parse(fileContents));
+                    DataFackerStore.saveItems();
+                });
+            });
         } else {
             var items = JSON.parse(fs.readFileSync(dataFile).toString('utf8'));
             DataFackerStore.setItems(items);
@@ -1491,24 +1509,17 @@ var JSONFackerTemplate = (function () {
     return JSONFackerTemplate;
 })();
 
-var MicroJSONGenHelperPlugin = (function () {
-    function MicroJSONGenHelperPlugin() {
-    }
-    MicroJSONGenHelperPlugin.loadFeed = function (key, feed) {
-        http.get("http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=100&q=" + feed, function (res) {
-            var fileContents = '';
-            res.on('data', function (data) {
-                fileContents += data.toString('utf8');
-            });
-            res.on('end', function (data) {
-                DataFackerStore.setItem(key, JSON.parse(fileContents));
-                DataFackerStore.saveItems();
-            });
-        });
-    };
-    return MicroJSONGenHelperPlugin;
-})();
-
+/*class MicroJSONGenHelperPlugin
+{
+static loadFeed( key, feed )
+{
+http.get("http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=100&q="+feed, function(res) {
+var fileContents ='';
+res.on('data', function(data){ fileContents+=data.toString('utf8')})
+res.on('end', function(data){ DataFackerStore.setItem(key, JSON.parse( fileContents ) ); DataFackerStore.saveItems(); })
+})
+}
+}*/
 var Base64 = (function () {
     function Base64() {
     }

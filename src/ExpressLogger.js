@@ -39,7 +39,7 @@ var ExpressLogger = (function () {
     ExpressLogger.color = function (color, text) {
         if (!Object.keys(ExpressLogger.colors).indexOf(color))
             return text;
-        return [ExpressLogger.colors[color], text, ExpressLogger.colors['black']].join('');
+        return [ExpressLogger.colors[color], text, "\x1b[0m"].join('');
     };
     ExpressLogger.colors = {
         'black': '\033[30m',

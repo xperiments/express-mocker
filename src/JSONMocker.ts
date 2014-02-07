@@ -15,6 +15,8 @@ import http = require('http');
 import fs = require('fs');
 import vm = require('vm');
 
+import logger = require("./ExpressLogger");logger;
+import Logger = logger.ExpressLogger;
 
 var $NodeStorage:NodeStorage = require('../node_modules/dom-storage/lib/index');
 
@@ -123,12 +125,13 @@ export class JSONMocker
 		this.context = context;
 		this.injector = JSONMocker.injectorPool.pop();
 		this.injector.register('$localStorage', JSONMocker.LOCAL_STORAGE );
-		this.injector.register('$console', (function(){ return console })() );
+		this.injector.register('$console', (function(){ return Logger })() );
 		this.injector.register('$helper', DataFackerHelper );
+		this.injector.register('$utils', DataFackerUtils );
 		this.injector.register("$request",
 			{
-				params:(id)=>{ return this.context.request.params[id] || "" }
-				,body:(id)=>{ return this.context.request.body[id] || "" }
+				params:(id)=>{ return this.context[id] || "" }
+				,body:(id)=>{ return this.context[id] || "" }
 			});
 
 		//register our custom template methods
@@ -137,8 +140,9 @@ export class JSONMocker
 		// preprocess request?
 		if( this.templateObject['$processRequest'] ){ this.injector.process( this.templateObject['$processRequest'] ); }
 
-
-		return this.parseObject( this.templateObject );
+		var result = this.parseObject( this.templateObject );
+		JSONMocker.injectorPool.push( this.injector );
+		return result;
 
 	}
 
@@ -170,7 +174,7 @@ export class JSONMocker
 
 	private parseVars( object:any ):any
 	{
-		var repeat:RegExp = /\$repeat\:([\d\,\s]*)/;
+		var repeat:RegExp = /\$repeat([\d\,\s]*)/;
 
 		switch( true )
 		{
@@ -1202,6 +1206,11 @@ export class DataFackerStore
 			);
 
 			//MicroJSONGenHelperPlugin.loadFeed('videoFeed', 'http://feeds.feedburner.com/TedtalksHD');
+			http.get("http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=100&q=http://feeds.feedburner.com/TedtalksHD", function(res) {
+				var fileContents ='';
+				res.on('data', function(data){ fileContents+=data.toString('utf8')})
+				res.on('end', function(data){ DataFackerStore.setItem('videoFeed', JSON.parse( fileContents ) ); DataFackerStore.saveItems(); })
+			})
 		}
 		else
 		{
@@ -1482,7 +1491,7 @@ class JSONFackerTemplate
 	}
 }
 
-class MicroJSONGenHelperPlugin
+/*class MicroJSONGenHelperPlugin
 {
 	static loadFeed( key, feed )
 	{
@@ -1492,7 +1501,7 @@ class MicroJSONGenHelperPlugin
 			res.on('end', function(data){ DataFackerStore.setItem(key, JSON.parse( fileContents ) ); DataFackerStore.saveItems(); })
 		})
 	}
-}
+}*/
 
 class Base64
 {

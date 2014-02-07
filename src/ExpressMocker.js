@@ -48,6 +48,7 @@ var ExpressMocker = (function () {
 
         //config.json file route
         var adminRoute = {
+            id: this.shash('/express-mocker/config.json'),
             hidden: true,
             active: true,
             verb: "get",
@@ -192,14 +193,17 @@ else
 
         switch (true) {
             case isFileDataUrlEncoded:
-                var dataUrlInfo = isDataUrlRegExp.exec(source), mime = dataUrlInfo[1], outputBuffer = Base64.decode(dataUrlInfo[3]);
+                var dataUrlInfo = isDataUrlRegExp.exec(source), mime = dataUrlInfo[1];
 
                 if (mime != "application/json-mock") {
                     // send the mine/base64 response from the buffer
-                    var len = Buffer.byteLength(jsonGenResult.result, 'utf8');
-                    this.sendContentLength(res, mime, len, 'utf8');
-                    res.send(outputBuffer);
+                    var buffer = Base64.decodeBuffer(dataUrlInfo[3]);
+                    var len = Buffer.byteLength(buffer.toString('utf8'), 'utf8');
+                    this.sendContentLength(res, mime, len);
+                    res.send(buffer);
                 } else {
+                    var outputBuffer = Base64.decode(dataUrlInfo[3]);
+
                     // process JSONMock template from the base64 encoded buffer
                     var jsonGenResult = this.parseJSONGen(outputBuffer, route, req, res);
                     var len = Buffer.byteLength(jsonGenResult.result, 'utf8');
@@ -262,6 +266,16 @@ else
         res.header('Access-Control-Allow-Headers', 'Content-Type');
         next();
     };
+
+    // HELPERS
+    ExpressMocker.prototype.shash = function (string) {
+        var value = 0;
+        for (var i = 0; i < string.length; i++) {
+            var cc = string.charCodeAt(i) + 96;
+            value = ((value * 27) + cc) % 9999999999999999;
+        }
+        return value.toString(16).toUpperCase();
+    };
     return ExpressMocker;
 })();
 exports.ExpressMocker = ExpressMocker;
@@ -275,6 +289,9 @@ var Base64 = (function () {
 
     Base64.decode = function (buffer) {
         return new Buffer(buffer, 'base64').toString('utf8');
+    };
+    Base64.decodeBuffer = function (buffer) {
+        return new Buffer(buffer, 'base64');
     };
     return Base64;
 })();

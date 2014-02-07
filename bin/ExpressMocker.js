@@ -10,32 +10,15 @@ var pkg = require("../package.json"),
 	{
 		port:7878
 		,quiet:false
-		,statics:[ { route:'/src', directory:'/src' } ]
 		,defaultRoutes:
 		[
 			{
 				verb:"get"
-				,route:"/admin"
-				,basicAuth:{ login:'xperiments', password:'viernes13' }
+				,active:true
+				,route:"/example"
 				,response:
 				{
-					source:"data:application/json-mock;base64,ew0KCWI6Ww0KCQkgIiRyZXBlYXQ6MzAiDQoJCSx7DQoJCQkibmFtZSI6Int7Y2xlYXJ9fSINCgkJCSwic3VybmFtZSI6Int7JGZpcnN0TmFtZX19Ig0KCQkJLCJpZCI6Int7JHF1ZXJ5KCdpZCcpfX0iDQoJCX0NCgldDQoJLCJjbGVhciI6ZnVuY3Rpb24oKXtyZXR1cm4gJzc3Nzc3J30NCn07"
-				}
-			}
-			,{
-				verb:"get"
-				,route:"/gif"
-				,response:
-				{
-					source:"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7"
-				}
-			}
-			,{
-				verb:"get"
-				,route:"/file"
-				,response:
-				{
-					source:"file.json-mk"
+					source:"data:application/json-mock;base64,IHsKICAgICJoZWxsbyI6Int7Zmlyc3ROYW1lfX0iCn0="
 				}
 			}
 		]
@@ -120,7 +103,7 @@ if( commander.install || commander.forceInstall )
 		{
 			fs.mkdir( expressMockerConfigDir )
 		}
-		fs.writeFile( expressMockerConfigPath, JSON.stringify(defaultConfigFile, null, "	"));
+		fs.writeFileSync( expressMockerConfigPath, JSON.stringify(defaultConfigFile, null, "	"));
 		Logger.log('ExpressMocker is now configured for the current project.');
 		Logger.log('Navigate to 127.0.0.1:7878/express-mocker to access the Dashboard');
 		runServer();

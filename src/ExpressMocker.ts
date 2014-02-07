@@ -9,22 +9,23 @@ import JSONMocker = jsonmocker.JSONMocker;
 import logger = require("./ExpressLogger");logger;
 import Logger = logger.ExpressLogger;
 
-export
-interface IExpressMockerStatic
-{
-	route:string;
-	directory:string;
-}
+
 
 export
 interface IExpressMockerConfig
 {
 	port: number;
 	quiet: boolean;
-	allowedDomains?:string[];
 	statics?:IExpressMockerStatic[];
 	adminAuth?:IExpressMockerBasicAuth;
 	defaultRoutes:IExpressMockerRoute[];
+}
+
+export
+interface IExpressMockerStatic
+{
+	route:string;
+	directory:string;
 }
 
 export
@@ -35,9 +36,16 @@ interface IExpressMockerBasicAuth
 }
 
 export
-interface IExpressMockerResponseHeaders
+interface IExpressMockerRoute
 {
-	[index: string]: any;
+	active:boolean;
+	id: string;
+	verb:string;
+	route:string;
+	response:IExpressMockerResponse;
+	hidden?:boolean;
+	basicAuth?:IExpressMockerBasicAuth;
+	routeParams?: IExpressMockerRouteParams;
 }
 
 export
@@ -46,17 +54,19 @@ interface IExpressMockerResponse
 	source:string;
 	headers?:IExpressMockerResponseHeaders
 }
-
 export
-interface IExpressMockerRoute
-{
-	hidden?:boolean;
-	active:boolean;
-	verb:string;
-	route:string;
-	basicAuth?:IExpressMockerBasicAuth;
-	response:IExpressMockerResponse
+interface IExpressMockerRouteParams {
+	name: string;
+	value: string;
+	description: string;
 }
+export
+interface IExpressMockerResponseHeaders
+{
+	[index: string]: any;
+}
+
+
 
 export
 interface IJSONGenResult
@@ -119,7 +129,7 @@ class ExpressMocker
 
 		//config.json file route
 		var adminRoute:IExpressMockerRoute = {
-
+			id:this.shash('/express-mocker/config.json'),
 			hidden:true,
 			active:true,
 			verb: "get",
@@ -279,19 +289,21 @@ class ExpressMocker
 			// source response is in dataURL format
 			case isFileDataUrlEncoded:
 				var dataUrlInfo:RegExpExecArray = isDataUrlRegExp.exec( source )
-					,mime:string = dataUrlInfo[1]
-					,outputBuffer:string = Base64.decode( dataUrlInfo[3]);
+					,mime:string = dataUrlInfo[1];
+
 
 				// if response is a JSONMocker file
 				if( mime != "application/json-mock" )
 				{
 					// send the mine/base64 response from the buffer
-					var len = Buffer.byteLength( jsonGenResult.result ,'utf8');
-					this.sendContentLength( res, mime, len,'utf8' );
-					res.send( outputBuffer );
+					var buffer:NodeBuffer = Base64.decodeBuffer( dataUrlInfo[3] );
+					var len = Buffer.byteLength( buffer.toString('utf8') ,'utf8');
+					this.sendContentLength( res, mime, len );
+					res.send( buffer );
 				}
 				else
 				{
+					var outputBuffer:string = Base64.decode( dataUrlInfo[3]);
 					// process JSONMock template from the base64 encoded buffer
 					var jsonGenResult:IJSONGenResult = this.parseJSONGen( outputBuffer, route, req, res );
 					var len = Buffer.byteLength( jsonGenResult.result ,'utf8');
@@ -366,6 +378,20 @@ class ExpressMocker
 	}
 
 
+	// HELPERS
+
+	private shash(string:string):string
+	{
+		var value:number = 0;
+		for (var i:number = 0; i < string.length; i++)
+		{
+			var cc:number = string.charCodeAt(i) + 96;
+			value = ((value * 27) + cc) % 9999999999999999;
+		}
+		return value.toString(16).toUpperCase();
+	}
+
+
 }
 
 class Base64
@@ -378,6 +404,10 @@ class Base64
 	static decode( buffer:string ):string
 	{
 		return new Buffer( buffer, 'base64').toString('utf8');
+	}
+	static decodeBuffer( buffer:string ):NodeBuffer
+	{
+		return new Buffer( buffer, 'base64');
 	}
 }
 

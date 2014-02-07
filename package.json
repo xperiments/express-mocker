@@ -13,6 +13,10 @@
 	,"bin":{
 		"express-mocker":"./bin/ExpressMocker.js"
 	}
+	,"repository": {
+		"type": "git",
+		"url": "git://github.com/xperiments/express-mocker.git"
+	}
 	,"keywords": [
 		"express"
 		,"mock"
