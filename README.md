@@ -15,6 +15,7 @@ A small FAKE REST web server for your daily development.
 ## <a name="features"></a>Features
 
 * Small
+* Configured via json or by an included Dashboard
 * Uses ExpressJS
 * Define an endpoint and return JSON data based on a template object
 * FakeData generator to use in templates
@@ -61,6 +62,10 @@ In a dir containing the express-mocker dir type:
 	express-mocker
 	
 This will run express-mocker with the default config.json port and verbose options.
+
+Now you can go to your browser and type this address to acces the dashboard.
+
+	http://127.0.0.1:7878/express-mocker
 
 You can also use this command line flags:	
 
