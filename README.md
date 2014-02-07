@@ -1,5 +1,7 @@
 #ExpressMocker
 
+WIP Alpha 0.0.2 Not full tested. Not for production.
+
 A small FAKE REST web server for your daily development. 
 
 * [Features](#features)
