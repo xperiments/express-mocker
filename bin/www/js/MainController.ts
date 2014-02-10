@@ -211,6 +211,7 @@ class MainController
 			this.config = data;
 			this.loading = false;
 
+			/*
 			// Fix old routes
 			this.config.defaultRoutes.map( ( route:IExpressMockerRoute )=>{
 				if (!route.id )
@@ -218,6 +219,7 @@ class MainController
 					route.id = this.shash( route.route );
 				}
 			});
+			*/
 			this.showList();
 		});
 	}
@@ -316,7 +318,6 @@ class MainController
 	public onDescriptionEditor( editor )
 	{
 		console.log( editor )
-		//editor.setReadOnly(true);
 	}
 
 	public toggleDescriptionPreview():void
@@ -350,8 +351,6 @@ class MainController
 					if( cloneParams.indexOf(e )==-1 ) delete outputObject[e];
 
 				});
-
-				console.log( outputObject,'000' )
 				this.currentRoute.routeParams = outputObject;
 			}
 			else
@@ -502,6 +501,8 @@ class MainController
 
 	public save():void
 	{
+		// ensure route has a valid id
+		this.currentRoute.id = this.shash( this.currentRoute.route );
 		if( this.currentResponseType == 0 )
 		{
 			var source:string = this.currentRoute.response.source;

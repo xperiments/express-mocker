@@ -105,12 +105,15 @@ var MainController = (function () {
             _this.config = data;
             _this.loading = false;
 
+            /*
             // Fix old routes
-            _this.config.defaultRoutes.map(function (route) {
-                if (!route.id) {
-                    route.id = _this.shash(route.route);
-                }
+            this.config.defaultRoutes.map( ( route:IExpressMockerRoute )=>{
+            if (!route.id )
+            {
+            route.id = this.shash( route.route );
+            }
             });
+            */
             _this.showList();
         });
     };
@@ -194,7 +197,6 @@ var MainController = (function () {
     ///
     MainController.prototype.onDescriptionEditor = function (editor) {
         console.log(editor);
-        //editor.setReadOnly(true);
     };
 
     MainController.prototype.toggleDescriptionPreview = function () {
@@ -228,8 +230,6 @@ var MainController = (function () {
                     if (cloneParams.indexOf(e) == -1)
                         delete outputObject[e];
                 });
-
-                console.log(outputObject, '000');
                 this.currentRoute.routeParams = outputObject;
             } else {
                 this.currentRoute.routeParams = {};
@@ -360,6 +360,8 @@ var MainController = (function () {
     };
 
     MainController.prototype.save = function () {
+        // ensure route has a valid id
+        this.currentRoute.id = this.shash(this.currentRoute.route);
         if (this.currentResponseType == 0) {
             var source = this.currentRoute.response.source;
             source = source.substring(source.indexOf('{') - 1, source.lastIndexOf('}') + 1);
