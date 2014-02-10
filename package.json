@@ -1,5 +1,5 @@
 {
-	"name": "ExpressMocker"
+	"name": "express-mocker"
 	,"description": "A simple Mockup Server for REST services that can generate fake data based on simple JSON templates."
 	,"version": "0.0.2"
 	,"engines": {"node": ">=0.10.0"}
