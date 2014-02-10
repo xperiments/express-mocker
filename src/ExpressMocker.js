@@ -6,6 +6,7 @@ var fs = require('fs');
 var jsonmocker = require("./JSONMocker");
 jsonmocker;
 var JSONMocker = jsonmocker.JSONMocker;
+var Pool = jsonmocker.Pool;
 var logger = require("./ExpressLogger");
 logger;
 var Logger = logger.ExpressLogger;
@@ -40,6 +41,7 @@ var ExpressMocker = (function () {
     function ExpressMocker(npmDir, rootDir) {
         this.npmDir = npmDir;
         this.rootDir = rootDir;
+        this.JSONMockerPool = new Pool(JSONMocker, 100);
     }
     ExpressMocker.prototype.loadConfig = function (path) {
         this.configPath = path;
@@ -108,7 +110,7 @@ else
         this.configureAdmin();
         this.configureStatics();
         this.expressListener = this.express.listen(this.config.port);
-        Logger.success('[Express Mocker] Starting server at port:', this.config.port);
+        Logger.success('[Express Mocker] Starting server [ @pid:', process.pid, '] at port:', this.config.port);
         return this;
     };
 
@@ -236,7 +238,9 @@ else
 
     ExpressMocker.prototype.parseJSONGen = function (data, route, req, res) {
         var dataUrlRegExp = /^data:(.+\/(.+));base64,(.*)$/;
-        var template = new JSONMocker().parseTemplate(data, mix(req.params, req.body));
+        var jsonmocker = this.JSONMockerPool.pop();
+        var template = jsonmocker.parseTemplate(data, mix(req.params, req.body));
+        this.JSONMockerPool.push(jsonmocker);
 
         if (template.$content && dataUrlRegExp.test(template.$content) && (Object.keys(JSON.parse(JSON.stringify(template))).length == 1)) {
             var dataUrlInfo = dataUrlRegExp.exec(template.$content);

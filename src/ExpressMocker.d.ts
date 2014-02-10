@@ -55,6 +55,7 @@ export declare class ExpressMocker {
     private expressListener;
     private config;
     private configPath;
+    private JSONMockerPool;
     constructor(npmDir: string, rootDir: string);
     public loadConfig(path: string): ExpressMocker;
     public setPort(port: number): ExpressMocker;

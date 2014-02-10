@@ -11,7 +11,7 @@ export declare class Injector {
     public processCall(target: Function, argv);
     public process<T>(target: Function): T;
     public register(name: string, dependency: any): void;
-    public dispose(): void;
+    public dispose(): Injector;
     private getDependencies(arr);
 }
 export declare class Pool<T> {

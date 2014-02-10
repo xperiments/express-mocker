@@ -54,10 +54,10 @@ class Injector
 		this.dependencies[name] = dependency;
 	}
 
-	public dispose():void
+	public dispose():Injector
 	{
-		Object.keys( this.dependencies ).map((key:string)=>{ delete this[key] });
-		this.dependencies = null;
+		Object.keys( this.dependencies ).map((key:string)=>{ delete this.dependencies[key] });
+		return this;
 	}
 
 	private getDependencies( arr )
@@ -103,25 +103,13 @@ export class JSONMocker
 	private static LOCAL_STORAGE:NodeStorage = 	new $NodeStorage('./express-mocker/express-mocker.db');
 	private static injectorPool:Pool<Injector> = new Pool( Injector, 1000 );
 	private context:any;
-
 	public templateObject:any;
 	public injector:Injector;
 
 	public parseTemplate( template:string, context:any ):Object
 	{
-		// create sandbox where "eval" our template
-		var sandbox:{ code:Object } = { code:null };
-
-		try
-		{
-			vm.runInNewContext('code = ' + template.substring( template.indexOf('{') ), sandbox);
-		}
-		catch (e)
-		{
-			return {};
-		}
-
-		this.templateObject = sandbox.code;
+		var fn:Function = new Function('return '+template.substring( template.indexOf('{') ) ) ;
+		this.templateObject = fn();
 		this.context = context;
 		this.injector = JSONMocker.injectorPool.pop();
 		this.injector.register('$localStorage', JSONMocker.LOCAL_STORAGE );
@@ -141,7 +129,8 @@ export class JSONMocker
 		if( this.templateObject['$processRequest'] ){ this.injector.process( this.templateObject['$processRequest'] ); }
 
 		var result = this.parseObject( this.templateObject );
-		JSONMocker.injectorPool.push( this.injector );
+
+		JSONMocker.injectorPool.push( this.injector.dispose() );
 		return result;
 
 	}
@@ -255,6 +244,7 @@ export class DataFackerStore
 
 	static сonstructor():boolean
 	{
+		console.log('paso');
 		var dataFile = './express-mocker/data.json';
 		if (!fs.existsSync(dataFile))
 		{
@@ -1403,24 +1393,13 @@ export class DataFackerUtils
 /*internal*/
 class JSONFackerTemplate
 {
+
 	//static fixJsonArguments( json:string ):string { return ['"', json.split(',').map((el)=>{return (el.replace(/^\'(.*)\'$/, "\"$1\"").replace(/^\"(.*)\"$/, "$1").replace(/\"/g, '\\"')); }).join('","'), '"'].join(''); }
 	static getCallingArgs( args:string ):any[]
 	{
 		var params:string[] = args.match(/\((.*)\)/);
-
-		// create
-		var sandbox:{ code:any[] } = { code:null };
-
-		try
-		{
-			vm.runInNewContext('code = ['+params[1].replace(/\'/g,'"')+']', sandbox);
-		}
-		catch (e)
-		{
-			return [];
-		}
-
-		return sandbox.code;
+		var fn = new Function('return ['+params[1].replace(/\'/g,'"')+']');
+		return fn();
 	}
 	/**
 	 * Replaces every {{variable}} inside the template with values provided by view

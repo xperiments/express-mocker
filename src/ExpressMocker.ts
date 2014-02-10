@@ -6,9 +6,9 @@ import express = require('express');
 import fs = require('fs');
 import jsonmocker = require("./JSONMocker");jsonmocker;
 import JSONMocker = jsonmocker.JSONMocker;
+import Pool = jsonmocker.Pool;
 import logger = require("./ExpressLogger");logger;
 import Logger = logger.ExpressLogger;
-
 
 
 export
@@ -118,7 +118,7 @@ class ExpressMocker
 	private expressListener:ICloseable; // TODO fix express.d.ts to correctly anotate this
 	private config:IExpressMockerConfig;
 	private configPath:string;
-
+	private JSONMockerPool:Pool<JSONMocker> = new Pool<JSONMocker>( JSONMocker, 100 );
 	constructor(private npmDir:string, private rootDir:string ){}
 
 	public loadConfig( path:string ):ExpressMocker
@@ -190,7 +190,7 @@ class ExpressMocker
 		this.configureAdmin();
 		this.configureStatics();
 		this.expressListener = <ICloseable>this.express.listen( this.config.port );
-		Logger.success('[Express Mocker] Starting server at port:', this.config.port );
+		Logger.success('[Express Mocker] Starting server [ @pid:',process.pid,'] at port:', this.config.port );
 		return this;
 	}
 
@@ -341,8 +341,9 @@ class ExpressMocker
 	{
 
 		var dataUrlRegExp:RegExp = /^data:(.+\/(.+));base64,(.*)$/;
-		var template:{ $content?:string } = new JSONMocker().parseTemplate( data, mix( req.params, req.body ) );
-
+		var jsonmocker:JSONMocker = this.JSONMockerPool.pop();
+		var template:{ $content?:string } = jsonmocker.parseTemplate( data, mix( req.params, req.body ) );
+		this.JSONMockerPool.push( jsonmocker );
 		// check if a direct output template is provided
 		if (template.$content && dataUrlRegExp.test(template.$content) && ( Object.keys(JSON.parse(JSON.stringify(template))).length == 1))
 		{

@@ -2,7 +2,7 @@
 ///<reference path="ExpressLogger.ts"/>
 var http = require('http');
 var fs = require('fs');
-var vm = require('vm');
+
 
 var logger = require("./ExpressLogger");
 logger;
@@ -43,9 +43,9 @@ var Injector = (function () {
     Injector.prototype.dispose = function () {
         var _this = this;
         Object.keys(this.dependencies).map(function (key) {
-            delete _this[key];
+            delete _this.dependencies[key];
         });
-        this.dependencies = null;
+        return this;
     };
 
     Injector.prototype.getDependencies = function (arr) {
@@ -94,16 +94,8 @@ var JSONMocker = (function () {
     }
     JSONMocker.prototype.parseTemplate = function (template, context) {
         var _this = this;
-        // create sandbox where "eval" our template
-        var sandbox = { code: null };
-
-        try  {
-            vm.runInNewContext('code = ' + template.substring(template.indexOf('{')), sandbox);
-        } catch (e) {
-            return {};
-        }
-
-        this.templateObject = sandbox.code;
+        var fn = new Function('return ' + template.substring(template.indexOf('{')));
+        this.templateObject = fn();
         this.context = context;
         this.injector = JSONMocker.injectorPool.pop();
         this.injector.register('$localStorage', JSONMocker.LOCAL_STORAGE);
@@ -129,7 +121,8 @@ var JSONMocker = (function () {
         }
 
         var result = this.parseObject(this.templateObject);
-        JSONMocker.injectorPool.push(this.injector);
+
+        JSONMocker.injectorPool.push(this.injector.dispose());
         return result;
     };
 
@@ -222,6 +215,7 @@ var DataFackerStore = (function () {
     function DataFackerStore() {
     }
     DataFackerStore.сonstructor = function () {
+        console.log('paso');
         var dataFile = './express-mocker/data.json';
         if (!fs.existsSync(dataFile)) {
             DataFackerStore.setItem("videoFeed", {});
@@ -1439,17 +1433,8 @@ var JSONFackerTemplate = (function () {
     JSONFackerTemplate.getCallingArgs = //static fixJsonArguments( json:string ):string { return ['"', json.split(',').map((el)=>{return (el.replace(/^\'(.*)\'$/, "\"$1\"").replace(/^\"(.*)\"$/, "$1").replace(/\"/g, '\\"')); }).join('","'), '"'].join(''); }
     function (args) {
         var params = args.match(/\((.*)\)/);
-
-        // create
-        var sandbox = { code: null };
-
-        try  {
-            vm.runInNewContext('code = [' + params[1].replace(/\'/g, '"') + ']', sandbox);
-        } catch (e) {
-            return [];
-        }
-
-        return sandbox.code;
+        var fn = new Function('return [' + params[1].replace(/\'/g, '"') + ']');
+        return fn();
     };
 
     JSONFackerTemplate.render = /**

@@ -547,6 +547,7 @@ declare module "vm" {
     export interface Script {
         runInThisContext(): void;
         runInNewContext(sandbox?: Context): void;
+		runInContext(sandbox?: Context): void;
     }
     export function runInThisContext(code: string, filename?: string): void;
     export function runInNewContext(code: string, sandbox?: Context, filename?: string): void;
