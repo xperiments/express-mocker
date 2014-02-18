@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var pkg = require("../package.json"),
 	commander = require("commander"),
-	Logger = require("../src/ExpressLogger.js").ExpressLogger,
+	Logger = require("../lib/ExpressLogger.js").ExpressLogger,
 	fs = require("fs"),
 	path = require("path"),
 	expressMockerConfigDir = "./express-mocker",
@@ -27,7 +27,7 @@ var pkg = require("../package.json"),
 
 function runServer()
 {
-	var ExpressMocker = require("../src/ExpressMocker.js").ExpressMocker;
+	var ExpressMocker = require("../lib/ExpressMocker.js").ExpressMocker;
 	new ExpressMocker( __dirname, process.cwd())
 		.loadConfig( expressMockerConfigPath )
 		.setQuiet( commander.quiet )

@@ -1,4 +1,3 @@
-
 export class ExpressLogger
 {
 	public static colors:{ [key:string]:string } =

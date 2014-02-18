@@ -1,14 +1,14 @@
-///<reference path="d.ts/DefinitelyTyped/node/node.d.ts"/>
+///<reference path="typings/node/node.d.ts"/>
 ///<reference path="ExpressLogger.ts"/>
 
-declare class NodeStorage {
-	constructor(db: string);
-	public getItem(key): any;
-	public setItem(key, value): void;
-	public removeItem(key): void;
-	public clear(): void;
-	public key(n): any;
-	public length: number;
+interface NodeStorage {
+	new(db: string);
+	getItem(key): any;
+	setItem(key, value): void;
+	removeItem(key): void;
+	clear(): void;
+	key(n): any;
+	length: number;
 }
 
 import http = require('http');
@@ -18,8 +18,7 @@ import vm = require('vm');
 import logger = require("./ExpressLogger");logger;
 import Logger = logger.ExpressLogger;
 
-var $NodeStorage:NodeStorage = require('../node_modules/dom-storage/lib/index');
-
+var $NodeStorage:NodeStorage = <NodeStorage>require('dom-storage');
 
 export
 class Injector
@@ -101,7 +100,7 @@ export class Pool<T>
 export class JSONMocker
 {
 	private static LOCAL_STORAGE:NodeStorage = 	new $NodeStorage('./express-mocker/express-mocker.db');
-	private static injectorPool:Pool<Injector> = new Pool( Injector, 1000 );
+	private static injectorPool:Pool<Injector> = new Pool<Injector>( Injector, 1000 );
 	private context:any;
 	public templateObject:any;
 	public injector:Injector;
@@ -113,7 +112,7 @@ export class JSONMocker
 		this.context = context;
 		this.injector = JSONMocker.injectorPool.pop();
 		this.injector.register('$localStorage', JSONMocker.LOCAL_STORAGE );
-		this.injector.register('$console', (function(){ return Logger })() );
+		this.injector.register('$console', Logger );
 		this.injector.register('$helper', DataFackerHelper );
 		this.injector.register('$utils', DataFackerUtils );
 		this.injector.register("$request",
@@ -239,12 +238,11 @@ export interface IBaseDict { [key:string]:any }
 
 export class DataFackerStore
 {
-	static items:IBaseDict = { }
-	static 〇:boolean = DataFackerStore.сonstructor()
+	static items:IBaseDict = { };
+	static 〇:boolean = DataFackerStore.сonstructor();
 
 	static сonstructor():boolean
 	{
-		console.log('paso');
 		var dataFile = './express-mocker/data.json';
 		if (!fs.existsSync(dataFile))
 		{
@@ -1223,7 +1221,7 @@ export class DataFackerStore
 
 	static getRandom(key:string):any
 	{
-		return DataFackerUtils.randomElement(DataFackerStore.items[ key ]);
+		return DataFackerUtils.randomItem(DataFackerStore.items[ key ]);
 	}
 
 	static getItems():IBaseDict
@@ -1253,7 +1251,7 @@ export class DataFackerHelper
 	static email():string{ return ( DataFackerHelper.firstName() + "@" + DataFackerHelper.company().replace(/[^a-zA-Z0-9]+/g, '') + ".com").toLowerCase() }
 	static bool():boolean{ return Math.random() > .5 ? true : false; }
 	static random(random):number { return DataFackerUtils.randomNumber( random ); }
-	static randomElement(key:string):number { return DataFackerUtils.randomElement( DataFackerStore.getItem( key ) ); }
+	static randomElement(key:string):number { return DataFackerUtils.randomItem( DataFackerStore.getItem( key ) ); }
 	static getRss( key:string )
 	{
 		var len = DataFackerStore.getItem('videoFeed').responseData.feed.entries.length;
@@ -1339,12 +1337,12 @@ export class DataFackerUtils
 {
 	static replacePattern(pattern:string):string
 	{
-		return (pattern.split('').map((p)=>
+		return (pattern.split('').map((p:string)=>
 		{
 			switch (p)
 			{
 				case "#":
-					return ~~(Math.random() * 10);
+					return ~~(Math.random() * 10)+'';
 					break;
 				case "U":
 				case "L":
@@ -1356,7 +1354,7 @@ export class DataFackerUtils
 		})).join('');
 	}
 
-	static randomElement(elements:any[]):any
+	static randomItem(elements:any[]):any
 	{
 		return elements[ DataFackerUtils.randomNumber(elements.length) ];
 	}
@@ -1393,6 +1391,22 @@ export class DataFackerUtils
 /*internal*/
 class JSONFackerTemplate
 {
+	static getMethodMapping( method:string, jsmocker:JSONMocker ):any
+	{
+		switch( true )
+		{
+			case jsmocker && jsmocker.templateObject && typeof jsmocker.templateObject[ method ]==="function":
+				return jsmocker;
+			break;
+			case typeof DataFackerHelper[ method ]==="function":
+				return DataFackerHelper;
+			break;
+			case typeof DataFackerUtils[ method ]==="function":
+				return DataFackerUtils
+			break;
+		}
+		return null;
+	}
 
 	//static fixJsonArguments( json:string ):string { return ['"', json.split(',').map((el)=>{return (el.replace(/^\'(.*)\'$/, "\"$1\"").replace(/^\"(.*)\"$/, "$1").replace(/\"/g, '\\"')); }).join('","'), '"'].join(''); }
 	static getCallingArgs( args:string ):any[]
@@ -1411,39 +1425,53 @@ class JSONFackerTemplate
 	{
 
 
-		return template.replace(/\{?\{\{\s*(.*?)\s*\}\}\}?/g, ( match:string, varName:string )=>
+		return <string>(<any>template).replace(/\{?\{\{\s*(.*?)\s*\}\}\}?/g, ( match:string, varName:string ):string=>
 		{
 			var methodName:string = varName.replace(/\(.*\)/, '');
 
+
 			//calling a partial method ?
-			if ( jsmocker )
+			if ( !!jsmocker && !!jsmocker.templateObject && typeof jsmocker.templateObject[ methodName ] === "function" )
 			{
-				// method in our template?
-				if( jsmocker.templateObject )
+
+				// has the calling funcion known Injected dependencies
+				if( jsmocker.injector.hasDependencies( jsmocker.templateObject[ methodName ] ) )
 				{
-					// calling a custom function in the current jsmocker.template
-					if ( typeof jsmocker.templateObject[ methodName ] == "function" )
-					{
-						// has the calling funcion known Injected dependencies
-						if( jsmocker.injector.hasDependencies( jsmocker.templateObject[ methodName ] ) )
-						{
-							var args:string[] = varName.match(/\(.*\)/);
-							var params:any[];
+					var args:string[] = varName.match(/\(.*\)/);
+					var params:any[];
 
-							// determine if arguments are passed to the method
-							args && args[0] && ( params = JSONFackerTemplate.getCallingArgs( args[0] ) );
+					// determine if arguments are passed to the method
+					args && args[0] && ( params = JSONFackerTemplate.getCallingArgs( args[0] ) );
 
-							// call has additional not injected params ?
-							// not injected params MUST precede the Injected params
-							// method(a,b,$localStorage,$request)
-							if( params ) return jsmocker.injector.processCall( jsmocker.templateObject[ methodName ], params );
+					// call has additional not injected params ?
+					// not injected params MUST precede the Injected params
+					// method(a,b,$localStorage,$request)
+					if( params ) return jsmocker.injector.processCall( jsmocker.templateObject[ methodName ], params );
 
-							// process normal injected function
-							return jsmocker.injector.process( jsmocker.templateObject[ methodName ] );
-						}
-					}
+					// process normal injected function
+					return jsmocker.injector.process<string>( jsmocker.templateObject[ methodName ] );
 				}
+				else
+				{
+					// process normal injected function
+					var args:string[] = varName.match(/\(.*\)/);
+					var params:any[];
+
+					// determine if arguments are passed to the method
+					args && args[0] && ( params = JSONFackerTemplate.getCallingArgs( args[0] ) );
+
+					// call has additional not injected params ?
+					// not injected params MUST precede the Injected params
+					// method(a,b,$localStorage,$request)
+					if( params ) return jsmocker.templateObject[ methodName ].apply(null, params );
+
+					// process normal injected function
+					return jsmocker.templateObject[ methodName ]();
+				}
+
 			}
+
+			var mapping:any = JSONFackerTemplate.getMethodMapping( methodName, jsmocker );
 
 			if ( typeof DataFackerHelper[ methodName ] == "function" )
 			{
@@ -1454,7 +1482,15 @@ class JSONFackerTemplate
 
 				return ( methodName == varName ? DataFackerHelper[varName]() : DataFackerHelper[methodName].apply(null, params ) );
 			}
+			if ( typeof DataFackerUtils[ methodName ] == "function" )
+			{
+				var args:string[] = varName.match(/\(.*\)/);
+				var params:any[];
+				//args && args[0] && ( params = JSON.parse('[' + JSONFackerTemplate.fixJsonArguments( args[0].replace(/[\(\)]/g, '')) + ']'));
+				args && args[0] && ( params = JSONFackerTemplate.getCallingArgs( args[0] ) );
 
+				return ( methodName == varName ? DataFackerUtils[varName]() : DataFackerUtils[methodName].apply(null, params ) );
+			}
 			var value:any = view[varName];
 			switch ( typeof value )
 			{
@@ -1466,7 +1502,7 @@ class JSONFackerTemplate
 					//anything else will be replaced with an empty string. This includes object, array and null.
 					return '';
 			}
-		});
+		})
 	}
 }
 

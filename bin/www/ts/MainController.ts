@@ -3,19 +3,23 @@
 
 
 declare function jsmin( input:string, level:number ):string;
+
 /**
  * Header for Showdown: https://github.com/coreyti/showdown
  */
-interface IShowdownStatic
-{
-    converter():/*IShowdown*/void; // TS2084: Call signatures used in a 'new' expression must have a 'void' return type.
-}
+
 interface IShowdown
 {
 	makeHtml(html:string): string;
 }
+declare module Showdown
+{
+	class converter implements IShowdown
+	{
+		makeHtml(html:string): string;
+	}
+}
 
-declare var Showdown: IShowdownStatic;
 
 
 export
@@ -43,6 +47,12 @@ interface IExpressMockerBasicAuth
 }
 
 export
+interface IExpressMockerRouteParamsDictionary
+{
+	[name:string]:IExpressMockerRouteParams;
+}
+
+export
 interface IExpressMockerRoute
 {
 	active:boolean;
@@ -53,7 +63,7 @@ interface IExpressMockerRoute
 	description?:string;
 	hidden?:boolean;
 	basicAuth?:IExpressMockerBasicAuth;
-	routeParams?:{ [name:string]:IExpressMockerRouteParams };
+	routeParams?:IExpressMockerRouteParamsDictionary;
 }
 
 export
@@ -345,7 +355,7 @@ class MainController
 					this.currentRoute.routeParams[ e ] = this.currentRoute.routeParams[ e ] || {name:e,value:'',description:''};
 				})
 
-				var outputObject:IExpressMockerRouteParams = MainController.clone( this.currentRoute.routeParams );
+				var outputObject:IExpressMockerRouteParamsDictionary = MainController.clone( this.currentRoute.routeParams );
 				Object.keys( outputObject ).map((e)=>{
 
 					if( cloneParams.indexOf(e )==-1 ) delete outputObject[e];

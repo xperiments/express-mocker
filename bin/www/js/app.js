@@ -1,19 +1,13 @@
-///<reference path="typings/angularjs/angular.d.ts"/>
 location.hash = '';
 
 var app = angular.module('ExpressMockerAdmin', ['ngRoute', 'ui.ace', 'ngSanitize']);
 app.controller('MainController', MainController).config([
-    '$routeProvider',
-    function ($routeProvider) {
+    '$routeProvider', function ($routeProvider) {
         $routeProvider.when('/list/:page', { action: 'list' }).when('/edit/:id', { action: 'edit' }).when('/add', { action: 'add' }).otherwise({
             redirectTo: '/list/0'
         });
-    }
-]).directive('ngFileSelect', [
-    '$parse',
-    '$http',
-    '$timeout',
-    function ($parse, $http, $timeout) {
+    }]).directive('ngFileSelect', [
+    '$parse', '$http', '$timeout', function ($parse, $http, $timeout) {
         return function (scope, elem, attr) {
             var fn = $parse(attr['ngFileSelect']);
             elem.bind('change', function (evt) {
@@ -34,8 +28,7 @@ app.controller('MainController', MainController).config([
                 this.value = null;
             });
         };
-    }
-]).filter('startFrom', function () {
+    }]).filter('startFrom', function () {
     return function (input, start) {
         start = +start;
         return input.slice(start);

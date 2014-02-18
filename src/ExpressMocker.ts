@@ -1,6 +1,6 @@
-///<reference path="d.ts/DefinitelyTyped/node/node.d.ts"/>
-///<reference path="d.ts/DefinitelyTyped/express/express.d.ts"/>
-///<reference path="JSONMocker.d.ts"/>
+///<reference path="typings/node/node.d.ts"/>
+///<reference path="typings/express/express.d.ts"/>
+///<reference path="JSONMocker.ts"/>
 
 import express = require('express');
 import fs = require('fs');
@@ -240,7 +240,7 @@ class ExpressMocker
 			this.configureRoutes();
 			this.configureAdmin();
 			this.configureStatics();
-
+			Logger.info('Server Reload Completed.');
 			res.writeHead(200, {"Content-Type": "application/json"});
 			res.end('{"configPath": "' + this.configPath + '", "reloaded": "true"}');
 		});

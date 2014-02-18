@@ -1,0 +1,10 @@
+{
+  "name": "www",
+  "version": "0.0.3",
+  "dependencies": {
+    "angular-route": "git://github.com/angular/bower-angular-route.git#~1.2.10",
+    "angular-sanitize": "git://github.com/angular/bower-angular-sanitize.git#~1.2.10",
+    "angular-ui-ace": "git://github.com/angular-ui/ui-ace.git#~0.1.0",
+    "showdown": "git://github.com/coreyti/showdown.git#~0.3.1"
+  }
+}
